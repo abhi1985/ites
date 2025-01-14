@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+        }
+        .container {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background-color: #333;
+            border: 2px dashed gold;
+        }
+        th, td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.5em;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #666;
+        }
+        th, td {
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table id="bus-schedule">
+            <thead>
+                <tr>
+                    <th>Bus Number</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Schedule Time</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Schedule rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const currentDateTime = new Date("2025-01-14T03:25:28");
+            const schedules = [
+                { busNumber: 101, source: "Central Station", destination: "North Park", scheduleTime: "2025-01-14 04:00:00", remarks: "On Time" },
+                { busNumber: 102, source: "East Side", destination: "West End", scheduleTime: "2025-01-14 02:30:00", remarks: "Delayed" },
+                { busNumber: 103, source: "South Gate", destination: "Central Station", scheduleTime: "2025-01-15 10:00:00", remarks: "On Time" },
+                { busNumber: 104, source: "Old Town", destination: "University", scheduleTime: "2025-01-14 11:00:00", remarks: "Cancelled" },
+                { busNumber: 105, source: "New District", destination: "Central Station", scheduleTime: "2025-01-14 12:00:00", remarks: "On Time" },
+                { busNumber: 106, source: "North Park", destination: "Central Station", scheduleTime: "2025-01-14 05:00:00", remarks: "On Time" },
+                { busNumber: 107, source: "West End", destination: "East Side", scheduleTime: "2025-01-14 06:00:00", remarks: "On Time" },
+                { busNumber: 108, source: "University", destination: "Old Town", scheduleTime: "2025-01-14 07:00:00", remarks: "On Time" },
+                { busNumber: 109, source: "Central Station", destination: "New District", scheduleTime: "2025-01-14 08:00:00", remarks: "On Time" },
+                { busNumber: 110, source: "East Side", destination: "West End", scheduleTime: "2025-01-14 09:00:00", remarks: "On Time" }
+            ];
+
+            const rowsPerPage = 8;
+            let currentPage = 0;
+
+            function renderTable(page) {
+                const tbody = document.querySelector("#bus-schedule tbody");
+                tbody.innerHTML = "";
+                const start = page * rowsPerPage;
+                const end = start + rowsPerPage;
+                const slicedSchedules = schedules.slice(start, end);
+
+                slicedSchedules.forEach(schedule => {
+                    const scheduleTime = new Date(schedule.scheduleTime);
+                    let status = "";
+
+                    if (scheduleTime > currentDateTime) {
+                        if (scheduleTime.toDateString() === currentDateTime.toDateString()) {
+                            status = "Right Time";
+                        } else {
+                            status = "Scheduled";
+                        }
+                    } else {
+                        status = "Departed";
+                    }
+
+                    const row = `
+                        <tr>
+                            <td>${schedule.busNumber}</td>
+                            <td>${schedule.source}</td>
+                            <td>${schedule.destination}</td>
+                            <td>${schedule.scheduleTime}</td>
+                            <td>${schedule.remarks}</td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML("beforeend", row);
+                });
+            }
+
+            function nextPage() {
+                currentPage++;
+                if (currentPage * rowsPerPage >= schedules.length) {
+                    currentPage = 0;
+                }
+                renderTable(currentPage);
+            }
+
+            renderTable(currentPage);
+            setInterval(nextPage, 30000); // Transition every 30 seconds
+        });
+    </script>
+</body>
+</html>
